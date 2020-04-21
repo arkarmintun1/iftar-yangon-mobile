@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Iftar Yangon</string>
+    <string name="facebook_app_id">168006357768893</string>
+    <string name="fb_login_protocol_scheme">fb168006357768893</string>
+</resources>
