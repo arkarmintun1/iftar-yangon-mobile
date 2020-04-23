@@ -3,11 +3,10 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:iftaryangon/screens/menus.dart';
 import 'package:iftaryangon/screens/profile.dart';
 import 'package:iftaryangon/screens/register.dart';
-
-final _firestore = Firestore.instance;
-FirebaseUser loggedInUser;
+import 'package:iftaryangon/screens/shops.dart';
 
 class HomeScreen extends StatefulWidget {
   static String id = 'home_screen';
@@ -18,6 +17,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _auth = FirebaseAuth.instance;
+  FirebaseUser loggedInUser;
+  int _selectedIndex = 0;
 
   @override
   void initState() {
@@ -31,6 +32,14 @@ class _HomeScreenState extends State<HomeScreen> {
       loggedInUser = user;
     } catch (e) {
       print(e);
+    }
+  }
+
+  Widget getBodyWidget() {
+    if (_selectedIndex == 0) {
+      return Menus();
+    } else {
+      return Shops();
     }
   }
 
@@ -53,72 +62,31 @@ class _HomeScreenState extends State<HomeScreen> {
           )
         ],
       ),
-      body: StreamBuilder(
-        stream: _firestore.collection('shops').snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          final shops = snapshot.data.documents;
-          List<Shop> shopList = [];
-          for (var shop in shops) {
-            final shopName = shop.data['name'];
-            final shopAddress = shop.data['address'];
-            final shopPhoneNumber = shop.data['phone_number'];
-
-            final shopItem = Shop(
-              name: shopName,
-              address: shopAddress,
-              phoneNumber: shopPhoneNumber,
-            );
-            shopList.add(shopItem);
-          }
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Container(
-                padding: EdgeInsets.all(16),
-                child: Text(
-                  'SHOPS',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-              Expanded(
-                child: ListView(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  children: shopList,
-                ),
-              ),
-            ],
-          );
+      body: getBodyWidget(),
+      bottomNavigationBar: BottomNavigationBar(
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.fastfood),
+            title: Text('Menus'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_basket),
+            title: Text('Shops'),
+          )
+        ],
+        currentIndex: _selectedIndex,
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
         },
       ),
-    );
-  }
-}
-
-class Shop extends StatelessWidget {
-  final String name;
-  final String address;
-  final String phoneNumber;
-
-  Shop({this.name, this.address, this.phoneNumber});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 4,
-      child: Column(
-        children: <Widget>[
-          Text(name),
-          Text(address),
-          Text(phoneNumber),
-        ],
+      floatingActionButton: FloatingActionButton(
+        child: Icon(
+          Icons.shopping_cart,
+          color: Colors.white,
+        ),
+        onPressed: () {},
       ),
     );
   }
