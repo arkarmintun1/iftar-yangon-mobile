@@ -16,16 +16,7 @@ class Menus extends StatelessWidget {
           );
         }
         List<DocumentSnapshot> menus = snapshot.data.documents;
-//        List<Menu> menuList = [];
-//        for (var menu in menus) {
-//          final menuName = menu.data['name'];
-//          final menuPrice = menu.data['price'];
-//
-//          final menuItem = Menu(
-//            name: menuName,
-//          );
-//          menuList.add(menuItem);
-//        }
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -41,16 +32,21 @@ class Menus extends StatelessWidget {
             ),
             Expanded(
               child: GridView.builder(
-                  itemCount: menus.length,
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 8,
-                      crossAxisSpacing: 8,
-                      childAspectRatio: 0.9),
-                  itemBuilder: (BuildContext context, int index) {
-                    return Menu(name: menus[index].data['name']);
-                  }),
+                itemCount: menus.length,
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 8,
+                    crossAxisSpacing: 8,
+                    childAspectRatio: 0.9),
+                itemBuilder: (BuildContext context, int index) {
+                  return Menu(
+                    name: menus[index].data['name'],
+                    image: menus[index].data['image'],
+                    available: menus[index].data['available'],
+                  );
+                },
+              ),
             ),
           ],
         );

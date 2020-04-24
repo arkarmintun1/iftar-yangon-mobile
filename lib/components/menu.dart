@@ -3,19 +3,24 @@ import 'package:flutter/material.dart';
 
 class Menu extends StatelessWidget {
   final String name;
+  final String image;
+  final bool available;
 
-  Menu({this.name});
+  Menu({this.name, this.image, this.available});
 
   Future<Widget> _getImage(BuildContext context, String imagePath) async {
     Image image;
     String downloadUrl =
         await FirebaseStorage.instance.ref().child(imagePath).getDownloadURL();
-    image = Image.network(
-      downloadUrl,
-      width: double.infinity,
-      height: double.infinity,
-      fit: BoxFit.cover,
-    );
+    image = available
+        ? Image.network(downloadUrl,
+            width: double.infinity, height: double.infinity, fit: BoxFit.cover)
+        : Image.network(downloadUrl,
+            width: double.infinity,
+            height: double.infinity,
+            fit: BoxFit.cover,
+            color: Colors.grey,
+            colorBlendMode: BlendMode.color);
     return image;
   }
 
@@ -31,9 +36,10 @@ class Menu extends StatelessWidget {
         children: <Widget>[
           Expanded(
             child: Stack(
+              fit: StackFit.expand,
               children: <Widget>[
                 FutureBuilder(
-                  future: _getImage(context, 'menus/menu_1.jpg'),
+                  future: _getImage(context, image),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.done)
                       return ClipRRect(
@@ -41,7 +47,7 @@ class Menu extends StatelessWidget {
                         child: snapshot.data,
                       );
                     if (snapshot.connectionState == ConnectionState.waiting)
-                      return Container(
+                      return Center(
                         child: CircularProgressIndicator(),
                       );
                     return Container(
@@ -57,7 +63,7 @@ class Menu extends StatelessWidget {
                     padding: EdgeInsets.symmetric(horizontal: 8),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
-                      color: Colors.white70,
+                      color: Colors.white,
                     ),
                     child: Text(
                       '၁၅၀၀ ကျပ်',
@@ -77,14 +83,14 @@ class Menu extends StatelessWidget {
                     child: RaisedButton(
                       padding: EdgeInsets.all(0),
                       shape: RoundedRectangleBorder(
-                        borderRadius: new BorderRadius.circular(8.0),
+                        borderRadius: BorderRadius.circular(8.0),
                       ),
                       child: Icon(
                         Icons.add_shopping_cart,
                         color: Colors.white,
                       ),
                       color: Colors.orangeAccent,
-                      onPressed: () {},
+                      onPressed: !available ? null : () {},
                     ),
                   ),
                 )

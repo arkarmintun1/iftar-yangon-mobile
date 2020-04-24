@@ -15,20 +15,8 @@ class Shops extends StatelessWidget {
             child: CircularProgressIndicator(),
           );
         }
-        final shops = snapshot.data.documents;
-        List<Shop> shopList = [];
-        for (var shop in shops) {
-          final shopName = shop.data['name'];
-          final shopAddress = shop.data['address'];
-          final shopPhoneNumber = shop.data['phone_number'];
+        List<DocumentSnapshot> shops = snapshot.data.documents;
 
-          final shopItem = Shop(
-            name: shopName,
-            address: shopAddress,
-            phoneNumber: shopPhoneNumber,
-          );
-          shopList.add(shopItem);
-        }
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -43,9 +31,17 @@ class Shops extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: ListView(
+              child: ListView.builder(
+                itemCount: shops.length,
                 padding: EdgeInsets.symmetric(horizontal: 10),
-                children: shopList,
+                itemBuilder: (BuildContext context, int index) {
+                  print(shops[index].data);
+                  return Shop(
+                    name: shops[index].data['name'],
+                    address: shops[index].data['address'],
+                    phoneNumber: shops[index].data['phone_number'],
+                  );
+                },
               ),
             ),
           ],

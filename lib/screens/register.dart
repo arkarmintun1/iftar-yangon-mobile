@@ -5,9 +5,48 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:iftaryangon/screens/profile.dart';
 
 class RegisterScreen extends StatelessWidget {
+  static String id = 'register_screen';
+
   final _googleSignIn = GoogleSignIn();
   final _auth = FirebaseAuth.instance;
-  static String id = 'register_screen';
+  final _formKey = GlobalKey<FormState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final _emailTextFieldController = TextEditingController();
+  final _passwordTextFieldController = TextEditingController();
+
+  void registerWithGmailPassword(BuildContext context) async {
+    print(
+        '${_emailTextFieldController.text} ${_passwordTextFieldController.text}');
+    try {
+      final firebaseUser = await _auth.createUserWithEmailAndPassword(
+        email: _emailTextFieldController.text,
+        password: _passwordTextFieldController.text,
+      );
+      Navigator.popAndPushNamed(context, ProfileScreen.id);
+    } catch (e) {
+      _scaffoldKey.currentState.showSnackBar(SnackBar(
+        content: Text("Error occurred! Please try again."),
+      ));
+      print(e);
+    }
+  }
+
+  void loginWithGmailPassword(BuildContext context) async {
+    print(
+        '${_emailTextFieldController.text} ${_passwordTextFieldController.text}');
+    try {
+      final firebaseUser = await _auth.signInWithEmailAndPassword(
+        email: _emailTextFieldController.text,
+        password: _passwordTextFieldController.text,
+      );
+      Navigator.popAndPushNamed(context, ProfileScreen.id);
+    } catch (e) {
+      _scaffoldKey.currentState.showSnackBar(SnackBar(
+        content: Text("Error occurred! Please try again."),
+      ));
+      print(e);
+    }
+  }
 
   void loginWithGoogle(BuildContext context) async {
     try {
@@ -20,7 +59,7 @@ class RegisterScreen extends StatelessWidget {
       final firebaseUser = await _auth.signInWithCredential(credential);
       Navigator.popAndPushNamed(context, ProfileScreen.id);
     } catch (e) {
-      Scaffold.of(context).showSnackBar(SnackBar(
+      _scaffoldKey.currentState.showSnackBar(SnackBar(
         content: Text("Error occurred! Please try again."),
       ));
       print(e);
@@ -42,21 +81,21 @@ class RegisterScreen extends StatelessWidget {
           }
         case FacebookLoginStatus.cancelledByUser:
           {
-            Scaffold.of(context).showSnackBar(SnackBar(
+            _scaffoldKey.currentState.showSnackBar(SnackBar(
               content: Text("Login has been cancelled. Please try again."),
             ));
             break;
           }
         case FacebookLoginStatus.error:
           {
-            Scaffold.of(context).showSnackBar(SnackBar(
+            _scaffoldKey.currentState.showSnackBar(SnackBar(
               content: Text("Error occurred! Please try again."),
             ));
             break;
           }
       }
     } catch (e) {
-      Scaffold.of(context).showSnackBar(SnackBar(
+      _scaffoldKey.currentState.showSnackBar(SnackBar(
         content: Text("Error occurred! Please try again."),
       ));
       print(e);
@@ -66,6 +105,7 @@ class RegisterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text('Register'),
       ),
@@ -76,16 +116,105 @@ class RegisterScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Image.asset(
-                'images/applogo.png',
-                width: 150,
-                height: 150,
+              Flexible(
+                child: Image.asset(
+                  'images/applogo.png',
+                  width: 150,
+                  height: 150,
+                ),
               ),
-              SizedBox(height: 50),
+              SizedBox(height: 10),
+              Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    TextFormField(
+                      controller: _emailTextFieldController,
+                      validator: (value) {
+                        return value.isEmpty ? 'Please enter email' : null;
+                      },
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.all(0),
+                        prefixIcon: Icon(Icons.person),
+                        border: OutlineInputBorder(),
+                        hoverColor: Colors.orangeAccent,
+                        hintText: 'Enter your email',
+                        labelText: 'Email',
+                      ),
+                    ),
+                    SizedBox(height: 5),
+                    TextFormField(
+                      controller: _passwordTextFieldController,
+                      obscureText: true,
+                      validator: (value) {
+                        return value.isEmpty ? 'Please enter password' : null;
+                      },
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.all(0),
+                        prefixIcon: Icon(Icons.vpn_key),
+                        border: OutlineInputBorder(),
+                        hintText: 'Enter your password',
+                        labelText: 'Password',
+                      ),
+                    ),
+                    SizedBox(height: 5),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        RaisedButton(
+                          color: Colors.orangeAccent,
+                          textColor: Colors.white,
+                          padding: EdgeInsets.all(10),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: Text(
+                            'Register',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          onPressed: () {
+                            if (_formKey.currentState.validate()) {
+                              registerWithGmailPassword(context);
+                            }
+                          },
+                        ),
+                        RaisedButton(
+                          color: Colors.orangeAccent,
+                          textColor: Colors.white,
+                          padding: EdgeInsets.all(10),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: Text(
+                            'Login',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          onPressed: () {
+                            if (_formKey.currentState.validate()) {
+                              loginWithGmailPassword(context);
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 20),
               RaisedButton(
                 color: Colors.orangeAccent,
                 textColor: Colors.white,
-                padding: EdgeInsets.all(20),
+                padding: EdgeInsets.all(10),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
                 child: Text(
                   'Login with Google',
                   style: TextStyle(
@@ -97,11 +226,14 @@ class RegisterScreen extends StatelessWidget {
                   loginWithGoogle(context);
                 },
               ),
-              SizedBox(height: 15),
+              SizedBox(height: 5),
               RaisedButton(
                 color: Colors.orangeAccent,
                 textColor: Colors.white,
-                padding: EdgeInsets.all(20),
+                padding: EdgeInsets.all(10),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
                 child: Text(
                   'Login with Facebook',
                   style: TextStyle(
