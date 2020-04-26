@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:iftaryangon/screens/home.dart';
+import 'package:iftaryangon/screens/shop_add.dart';
 
 class ProfileScreen extends StatefulWidget {
   static String id = "profile_screen";
@@ -122,14 +123,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   color: Colors.orangeAccent,
                   icon: Icon(Icons.add_shopping_cart),
                   onPressed: () {
-                    showModalBottomSheet(
-                      context: context,
-                      builder: (context) => Container(
-                        child: Center(
-                          child: buildBottomSheet(),
-                        ),
-                      ),
-                    );
+                    Navigator.pushNamed(context, ShopAddScreen.id);
                   },
                 ),
               ],
